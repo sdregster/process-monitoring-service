@@ -9,8 +9,8 @@ from router import process_router, info_router
 
 @asynccontextmanager
 async def lifespan(app: FastAPI):
-    await delete_tables()
-    print("Previous tables has been dropped")
+    # await delete_tables()
+    # print("Previous tables has been dropped")
     await create_tables()
     print("Tables has been recreated")
     yield
@@ -22,4 +22,4 @@ app.include_router(process_router)
 app.include_router(info_router)
 
 if __name__ == "__main__":
-    uvicorn.run(app="main:app", reload=True)
+    uvicorn.run(app="main:app", reload=True, port=8080)

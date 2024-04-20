@@ -30,6 +30,8 @@ class SInfoAdd(BaseModel):
 class SInfo(SInfoAdd):
     id: int
 
+    model_config = ConfigDict(from_attributes=True)
+
 
 class SInfoId(BaseModel):
     ok: bool = True

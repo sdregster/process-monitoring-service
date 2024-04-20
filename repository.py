@@ -1,4 +1,4 @@
-from sqlalchemy import select
+from sqlalchemy import select, update
 
 from database import new_session, ProcessModel, InfoModel
 from schemas import SProcessCreate, SProcess, SInfoAdd, SInfo
@@ -16,13 +16,30 @@ class ProcessRepository:
             return process.id
 
     @classmethod
-    async def get_all_processes(cls) -> list[SProcess]:
+    async def get_processes(cls, **filter_by) -> list[SProcess]:
         async with new_session() as session:
-            query = select(ProcessModel)
-            result = await session.execute(query)
+            stmt = select(ProcessModel).filter_by(**filter_by)
+            result = await session.execute(stmt)
             process_models = result.scalars().all()
-            process_schemas = [SProcess.model_validate(process_model) for process_model in process_models]
+            process_schemas = [
+                SProcess.model_validate(process_model)
+                for process_model in process_models
+            ]
             return process_schemas
+
+    @classmethod
+    async def update_process(cls, id: int, data: dict) -> int:
+        async with new_session() as session:
+            print(data)
+            stmt = (
+                update(ProcessModel)
+                .values(**data)
+                .filter_by(id=id)
+                .returning(ProcessModel.id)
+            )
+            res = await session.execute(stmt)
+            await session.commit()
+            return res.scalar_one()
 
 
 class InfoRepository:
@@ -37,10 +54,12 @@ class InfoRepository:
             return info.id
 
     @classmethod
-    async def get_infos(cls) -> list[SInfo]:
+    async def get_infos(cls, **filter_by) -> list[SInfo]:
         async with new_session() as session:
-            query = select(InfoModel)
-            result = await session.execute(query)
+            stmt = select(InfoModel).filter_by(**filter_by)
+            result = await session.execute(stmt)
             infos_models = result.scalars().all()
-            infos_schemas = [SInfo.model_validate(info_model) for info_model in infos_models]
+            infos_schemas = [
+                SInfo.model_validate(info_model) for info_model in infos_models
+            ]
             return infos_schemas
