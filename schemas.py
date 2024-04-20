@@ -33,6 +33,9 @@ class SInfo(SInfoAdd):
     model_config = ConfigDict(from_attributes=True)
 
 
-class SInfoId(BaseModel):
+class Response(BaseModel):
     ok: bool = True
+
+
+class SInfoId(Response):
     info_id: int

@@ -11,6 +11,7 @@ from schemas import (
     SInfoAdd,
     SInfoId,
     SInfo,
+    Response,
 )
 
 process_router = APIRouter(prefix="/processes", tags=["Процессы"])
@@ -30,18 +31,18 @@ async def get_unnotified_processes() -> list[SProcess]:
     return processes
 
 
-@process_router.get("/finished/{process_id}")
-async def mark_as_finished(process_id) -> dict:
+@process_router.get("/mark_as_finished/{process_id}")
+async def mark_as_finished(process_id) -> Response:
     data = {"finished_at": datetime.now()}
     await ProcessRepository.update_process(process_id, data)
-    return {"ok": True}
+    return Response()
 
 
-@process_router.get("/notified/{process_id}")
-async def mark_as_notified(process_id) -> dict:
+@process_router.get("/mark_as_notified/{process_id}")
+async def mark_as_notified(process_id) -> Response:
     data = {"notified": True}
     await ProcessRepository.update_process(process_id, data)
-    return {"ok": True}
+    return Response()
 
 
 info_router = APIRouter(prefix="/info", tags=["Информационные сообщения"])
